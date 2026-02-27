@@ -1,0 +1,15 @@
+seeds/
+roots.json
+points.json
+embeddings.json
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.DS_Store
