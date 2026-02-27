@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Karma</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <!-- vis-network for interactive graph -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/vis-network.min.js"></script>
+  <!-- marked.js for live markdown preview -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div id="topbar">
+    <span class="logo">Karma</span>
+    <span id="karma-score" title="Total karma points">K 0 pts</span>
+  </div>
+
+  <!-- Three-panel layout -->
+  <div id="panels">
+
+    <!-- Panel 1: Graph -->
+    <div class="panel" id="panel-graph">
+      <div class="panel-header">
+        <span class="panel-title">Graph</span>
+        <span id="graph-stats" class="muted"></span>
+      </div>
+      <div id="graph-container"></div>
+      <div id="graph-empty" class="empty-state hidden">
+        Add seeds with <code>karma add</code> to grow your graph.
+      </div>
+    </div>
+
+    <!-- Panel 2: Editor -->
+    <div class="panel" id="panel-editor">
+      <div class="panel-header">
+        <span class="panel-title">Editor</span>
+        <div class="editor-actions">
+          <button id="btn-new" class="btn btn-ghost" title="New seed">New</button>
+          <button id="btn-save" class="btn btn-primary" title="Save seed">Save</button>
+        </div>
+      </div>
+      <div id="editor-body">
+        <input
+          type="text"
+          id="editor-title"
+          placeholder="Seed title..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div id="editor-split">
+          <textarea
+            id="editor-input"
+            placeholder="Write your seed in markdown..."
+            spellcheck="false"
+          ></textarea>
+          <div id="editor-preview" class="markdown-body"></div>
+        </div>
+      </div>
+      <div id="editor-status" class="status-bar"></div>
+    </div>
+
+    <!-- Panel 3: Chat -->
+    <div class="panel" id="panel-chat">
+      <div class="panel-header">
+        <span class="panel-title">Chat</span>
+        <span class="muted" id="chat-subtitle">Ask your knowledge base</span>
+      </div>
+      <div id="chat-messages"></div>
+      <div id="chat-input-row">
+        <input
+          type="text"
+          id="chat-input"
+          placeholder="Ask anything about your seeds..."
+          autocomplete="off"
+        />
+        <button id="btn-send" class="btn btn-primary">Send</button>
+      </div>
+    </div>
+
+  </div><!-- /panels -->
+
+  <script src="/static/app.js" type="module"></script>
+</body>
+</html>

@@ -40,11 +40,19 @@ karma status
 #   Points: 120
 ```
 
-Launch the visual UI (graph + chat):
+Launch the Streamlit UI (graph + chat):
 
 ```
 karma chat
 # Opens Streamlit in your browser at http://localhost:8501
+```
+
+Launch the full Web UI (recommended):
+
+```
+karma web
+# Karma Web UI starting at http://localhost:8765
+# Opens browser automatically
 ```
 
 ## How Discovery Works
@@ -73,6 +81,23 @@ Karma awards points as you grow your knowledge graph:
 
 Points accumulate in `points.json` with a full log of every event.
 
+## Web UI
+
+`karma web` launches a standalone single-page app on `localhost:8765`. It has
+three panels side by side:
+
+- **Graph** — vis.js interactive network of all seeds and roots. Click any node
+  to open that seed in the Editor.
+- **Editor** — title field and markdown textarea with a live rendered preview
+  on the right. Save creates a new seed or updates an existing one, runs
+  relationship discovery, and refreshes the graph automatically.
+- **Chat** — ask questions about your knowledge base. Answers show which seeds
+  were used as context below each response.
+
+The karma score is always visible in the top bar and updates after each save.
+
+Streamlit (`karma chat`) remains available as a fallback.
+
 ## File Layout
 
 ```
@@ -81,19 +106,25 @@ karma/
 ├── CHANGELOG.md
 ├── pyproject.toml
 ├── karma/
-│   ├── cli.py           # karma add, karma chat, karma status
+│   ├── cli.py           # karma add, karma chat, karma status, karma web
+│   ├── api.py           # FastAPI backend: /api/* endpoints
 │   ├── discovery.py     # semantic similarity, roots.json management
 │   ├── points.py        # karma points logic
 │   ├── chat.py          # Claude RAG chat backend
-│   └── ui/
-│       ├── app.py       # Streamlit entry point (two tabs)
-│       ├── graph_view.py
-│       └── chat_view.py
+│   ├── ui/              # Streamlit UI (karma chat)
+│   │   ├── app.py
+│   │   ├── graph_view.py
+│   │   └── chat_view.py
+│   └── web/             # Single-page web UI (karma web)
+│       ├── index.html
+│       ├── style.css
+│       └── app.js
 ├── seeds/               # your markdown seeds (one file per seed)
 ├── roots.json           # auto-generated relationship graph
 ├── points.json          # karma points log
 ├── embeddings.json      # cached seed embeddings (auto-generated)
 └── tests/
+    ├── test_api.py
     ├── test_discovery.py
     ├── test_points.py
     └── test_cli.py

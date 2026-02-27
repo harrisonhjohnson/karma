@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-27
+
+### Added
+
+- `karma web` CLI command: starts FastAPI server on `localhost:8765` and opens
+  the single-page web UI in the browser; `--port` and `--no-browser` flags
+  available (KARMA-013)
+- `karma/api.py`: FastAPI REST backend exposing 7 endpoints (`GET /api/seeds`,
+  `GET /api/seeds/{slug}`, `POST /api/seeds`, `PUT /api/seeds/{slug}`,
+  `GET /api/graph`, `POST /api/chat`, `GET /api/status`); all endpoints use
+  Pydantic models for request/response validation (KARMA-012)
+- `karma/web/`: single-page web frontend served by FastAPI
+  - `index.html`: three-panel shell (Graph, Editor, Chat)
+  - `style.css`: dark theme matching Streamlit palette; fully responsive column
+    layout with sticky top bar
+  - `app.js`: vis.js interactive graph (click node opens seed in Editor),
+    seed editor with live markdown preview via marked.js, chat panel with
+    context seed attribution (KARMA-014)
+- Karma score badge always visible in the web UI top bar; updates after each
+  seed save (KARMA-014)
+- `tests/test_api.py`: 22 pytest tests covering all 7 API endpoints using
+  FastAPI TestClient and tmp_path path overrides; no real model or API calls
+  made in any test (KARMA-015)
+- Dependencies: `fastapi>=0.100.0`, `uvicorn[standard]>=0.23.0`,
+  `httpx>=0.24.0` added to `pyproject.toml` (KARMA-012)
+
+### Fixed
+
+- Graph view: added onboarding captions explaining seeds/roots jargon and node
+  color legend below the seeds/roots metric header (KARMA-009)
+- Chat view: renamed "Sources:" label to "Context seeds:" to accurately
+  describe that the listed seeds were passed as context, not necessarily cited
+  by Claude (KARMA-010)
+- Chat view: added empty-state guard — if `seeds/` has no `.md` files, shows
+  an info message and hides the chat input instead of allowing a confusing
+  "no seeds available" error from Claude (KARMA-011)
+
 ## [0.1.0] - 2026-02-26
 
 ### Added

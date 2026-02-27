@@ -136,3 +136,29 @@ def chat() -> None:
 
     app_path = Path(__file__).parent / "ui" / "app.py"
     sp.run(["streamlit", "run", str(app_path)], check=False)
+
+
+@cli.command()
+@click.option("--port", default=8765, show_default=True, help="Port to listen on.")
+@click.option(
+    "--no-browser",
+    is_flag=True,
+    default=False,
+    help="Don't open browser automatically.",
+)
+def web(port: int, no_browser: bool) -> None:
+    """Launch the Karma Web UI (FastAPI backend + single-page frontend)."""
+    import threading
+    import webbrowser
+
+    import uvicorn
+
+    url = f"http://localhost:{port}"
+
+    if not no_browser:
+        # Open browser after a short delay so uvicorn has time to start
+        threading.Timer(1.2, lambda: webbrowser.open(url)).start()
+
+    click.echo(f"Karma Web UI starting at {url}")
+    click.echo("Press Ctrl+C to stop.")
+    uvicorn.run("karma.api:app", host="localhost", port=port, reload=False)
