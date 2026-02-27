@@ -105,6 +105,12 @@ def render_graph_view(
     edge_count = raw_edge_count // 2
 
     st.markdown(f"**{node_count} seeds** | **{edge_count} roots**")
+    st.caption(
+        "Seeds are your notes. Roots are auto-discovered connections between them."
+    )
+    st.caption(
+        "Node colors: gray = isolated, blue = 1-2 roots, gold = 3+ roots"
+    )
 
     # Build pyvis network
     net = Network(
