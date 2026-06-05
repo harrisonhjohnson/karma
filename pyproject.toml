@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "Personal knowledge graph where entries (seeds) have auto-discovered relationships (roots)."
 readme = "README.md"
 requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Harrison Johnson" }]
 dependencies = [
     "sentence-transformers>=2.7.0",
     "streamlit>=1.32.0",

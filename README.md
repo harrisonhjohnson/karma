@@ -1,5 +1,8 @@
 # Karma
 
+[![CI](https://github.com/harrisonhjohnson/karma/actions/workflows/ci.yml/badge.svg)](https://github.com/harrisonhjohnson/karma/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Personal knowledge graph with auto-discovered relationships.
 
 Karma stores your notes as markdown seeds and automatically discovers semantic
