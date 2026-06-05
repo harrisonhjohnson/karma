@@ -145,7 +145,7 @@ class TestDiscoverRoots:
 
         result = discover_roots(
             "seed-a",
-            threshold=0.45,
+            floor=0.45,
             seeds_dir=seeds_dir,
             embeddings_override=embeddings,
         )
@@ -162,15 +162,14 @@ class TestDiscoverRoots:
 
         result = discover_roots(
             "seed-c",
-            threshold=0.45,
+            floor=0.45,
             seeds_dir=seeds_dir,
             embeddings_override=embeddings,
         )
         assert result == []
 
-    def test_high_threshold_excludes_moderate_matches(self, tmp_path):
-        """At threshold=0.98, moderate match seed-b is excluded."""
-        # seed-a and seed-b are similar but not that similar (sim ~0.92)
+    def test_high_floor_excludes_moderate_matches(self, tmp_path):
+        """At floor=0.98, the moderate match seed-b (sim 0.6) is excluded."""
         embeddings = {
             "seed-a": [1.0, 0.0, 0.0, 0.0],
             "seed-b": [0.6, 0.8, 0.0, 0.0],  # sim = 0.6, below 0.98
@@ -182,7 +181,7 @@ class TestDiscoverRoots:
 
         result = discover_roots(
             "seed-a",
-            threshold=0.98,
+            floor=0.98,
             seeds_dir=seeds_dir,
             embeddings_override=embeddings,
         )
@@ -213,6 +212,49 @@ class TestDiscoverRoots:
             embeddings_override=embeddings,
         )
         assert result == []
+
+    def test_top_k_caps_results_strongest_first(self, tmp_path):
+        """More candidates above the floor than top_k -> only the strongest
+        top_k are returned, in descending similarity order."""
+        embeddings = {
+            "seed-a": [1.0, 0.0, 0.0, 0.0],
+            "near-1": [0.99, 0.14, 0.0, 0.0],
+            "near-2": [0.95, 0.31, 0.0, 0.0],
+            "near-3": [0.90, 0.44, 0.0, 0.0],
+            "near-4": [0.85, 0.53, 0.0, 0.0],  # dropped at top_k=3
+        }
+        seeds_dir = tmp_path / "seeds"
+        seeds_dir.mkdir()
+        _make_seed(seeds_dir, "seed-a")
+
+        result = discover_roots(
+            "seed-a",
+            floor=0.3,
+            top_k=3,
+            seeds_dir=seeds_dir,
+            embeddings_override=embeddings,
+        )
+        assert result == ["near-1", "near-2", "near-3"]
+
+    def test_moderate_match_linked_at_default_floor(self, tmp_path):
+        """A moderate match (sim ~0.42) that a 0.45 cutoff would orphan is linked
+        at the default floor — the top-K fix for related-but-not-identical notes."""
+        embeddings = {
+            "seed-a": [1.0, 0.0, 0.0, 0.0],
+            "seed-b": [0.42, 0.91, 0.0, 0.0],  # sim ~0.42 (< old 0.45 cutoff)
+            "seed-c": [0.0, 0.0, 1.0, 1.0],  # unrelated
+        }
+        seeds_dir = tmp_path / "seeds"
+        seeds_dir.mkdir()
+        _make_seed(seeds_dir, "seed-a")
+
+        result = discover_roots(  # default floor=0.35, top_k=5
+            "seed-a",
+            seeds_dir=seeds_dir,
+            embeddings_override=embeddings,
+        )
+        assert "seed-b" in result
+        assert "seed-c" not in result
 
 
 # ---------------------------------------------------------------------------

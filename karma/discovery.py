@@ -85,26 +85,34 @@ def embed_seed(path: Path) -> np.ndarray:
 
 def discover_roots(
     seed_slug: str,
-    threshold: float = 0.45,
+    floor: float = 0.35,
+    top_k: int = 5,
     *,
     seeds_dir: Path | None = None,
     embeddings_override: dict[str, list[float]] | None = None,
 ) -> list[str]:
-    """Find seeds semantically similar to `seed_slug` above `threshold`.
+    """Find the seeds most semantically related to `seed_slug`.
+
+    Links each seed to its `top_k` nearest neighbours whose cosine similarity is
+    at least `floor`. Top-K (rather than a single hard cutoff) connects a note to
+    its best matches even when none clears a high absolute bar, while the `floor`
+    keeps genuinely unrelated notes unlinked.
 
     1. Embeds the target seed (or uses embeddings_override for testing).
     2. Compares against all cached embeddings.
-    3. Returns list of slugs whose cosine similarity >= threshold (excluding self).
+    3. Returns up to `top_k` slugs with similarity >= floor (excluding self),
+       strongest first.
     4. Updates embeddings.json with the new seed's embedding.
 
     Args:
         seed_slug: Slug of the seed to find roots for.
-        threshold: Cosine similarity threshold (default 0.45).
+        floor: Minimum cosine similarity to count as related (default 0.35).
+        top_k: Max number of links per seed (default 5).
         seeds_dir: Override seeds directory (for testing).
         embeddings_override: Pre-loaded embeddings dict (for testing, skips model).
 
     Returns:
-        List of related seed slugs (may be empty).
+        List of related seed slugs, strongest first (may be empty).
     """
     _seeds_dir = seeds_dir or SEEDS_DIR
     seed_path = _seeds_dir / f"{seed_slug}.md"
@@ -130,7 +138,7 @@ def discover_roots(
     if target_vector.size == 0:
         return []
 
-    related: list[str] = []
+    scored: list[tuple[str, float]] = []
     for slug, vec_list in embeddings.items():
         if slug == seed_slug:
             continue
@@ -138,10 +146,12 @@ def discover_roots(
         if other_vector.size == 0:
             continue
         sim = _cosine_similarity(target_vector, other_vector)
-        if sim >= threshold:
-            related.append(slug)
+        if sim >= floor:
+            scored.append((slug, sim))
 
-    return related
+    # Top-K nearest above the floor, strongest first.
+    scored.sort(key=lambda pair: pair[1], reverse=True)
+    return [slug for slug, _ in scored[:top_k]]
 
 
 def load_roots() -> dict[str, list[str]]:

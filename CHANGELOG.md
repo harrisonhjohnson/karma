@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Relationship discovery now links each seed to its **top-K nearest neighbours
+  above a similarity floor** (`floor=0.35`, `top_k=5`) instead of a single hard
+  `0.45` cutoff. Related-but-not-identical notes now connect (a ~0.42 match the
+  old cutoff orphaned now links), while genuinely unrelated notes stay unlinked.
+  The `discover_roots` `threshold` parameter is renamed to `floor`.
+
 ## [0.2.0] - 2026-02-27
 
 ### Added
