@@ -25,6 +25,9 @@ dependencies = [
     "httpx>=0.24.0",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
 [project.scripts]
 karma = "karma.cli:cli"
 karma-ui = "karma.ui.app:main"
